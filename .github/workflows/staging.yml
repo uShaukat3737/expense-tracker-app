@@ -53,4 +53,4 @@ jobs:
           echo "Testing Preview URL: $PREVIEW_URL"
           # Curl will fail the workflow if health endpoint doesn't return 2xx
           curl -f "$PREVIEW_URL/api/health" || exit 1
-          echo "Staging health check passed!"
+          echo "Staging health check passed! ^_^"

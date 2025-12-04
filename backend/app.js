@@ -16,6 +16,10 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Backend running" });
+});
+
 const allowedOrigins = [
   "https://main.d1sj7cd70hlter.amplifyapp.com",
   "https://expense-tracker-app-three-beryl.vercel.app",
@@ -42,10 +46,6 @@ app.use("/api/auth", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
-});
-
-app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "ok", message: "Backend running" });
 });
 
 // --- START SERVER ONLY IF RUNNING LOCALLY ---

@@ -44,6 +44,10 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Backend running" });
+});
+
 // --- START SERVER ONLY IF RUNNING LOCALLY ---
 const port = process.env.PORT || 5000;
 

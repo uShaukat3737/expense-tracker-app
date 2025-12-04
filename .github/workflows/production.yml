@@ -30,5 +30,5 @@ jobs:
           vercel-args: '--prod'
 
       - name: Post-Deploy Health Check
-        run: curl -f https://your-app-name.vercel.app/api/health || exit 1
+        run: curl -f https://expense-tracker-app-ten-ecru.vercel.app/api/health || exit 1
         

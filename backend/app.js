@@ -1,6 +1,6 @@
-import 'dotenv/config';  // ← Vercel: loads backend/.env
+import 'dotenv/config';                  // Vercel loads .env automatically
 import dotenv from "dotenv";
-dotenv.config({ path: "./config/config.env" });  // ← Local: overrides with config.env
+dotenv.config({ path: "./config/config.env" }); // Local override
 
 import express from "express";
 import cors from "cors";
@@ -13,8 +13,7 @@ import userRoutes from "./Routers/userRouter.js";
 
 const app = express();
 
-const port = process.env.PORT || 5001;
-
+// Connect to MongoDB
 connectDB();
 
 const allowedOrigins = [
@@ -45,6 +44,13 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.listen(port, () => {
-  console.log(`Server is listening on http://localhost:${port}`);
-});
+// --- START SERVER ONLY IF RUNNING LOCALLY ---
+const port = process.env.PORT || 5000;
+
+if (process.env.VERCEL === undefined) {
+  app.listen(port, () => {
+    console.log(`Server is listening on http://localhost:${port}`);
+  });
+}
+
+export default app;

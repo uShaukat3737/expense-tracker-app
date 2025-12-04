@@ -1,42 +1,38 @@
-name: CI/CD - Staging & Production Deployment
+name: Staging - Deploy & Validate
 
-# ---------------------------------------------
-# TRIGGERS
-# ---------------------------------------------
 on:
   pull_request:
-    branches: [ main ]     # Staging previews
-  push:
-    branches: [ main ]     # Production deploy
+    branches: [ main ]
 
 permissions:
   contents: write
   pull-requests: write
-
-# =============================================
-# JOB: STAGING DEPLOYMENT (PR PREVIEW)
-# =============================================
+  actions: write
+  
 jobs:
-  staging-deploy:
-    if: github.event_name == 'pull_request'
+  deploy-preview:
     runs-on: ubuntu-latest
-    environment: staging
+    environment: preview  # Optional: for visibility in GitHub Actions
     outputs:
       preview_url: ${{ steps.vercel.outputs.preview-url }}
 
     steps:
+      # Step 1: Checkout repo
       - uses: actions/checkout@v4
 
+      # Step 2: Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
+      # Step 3: Install dependencies
       - name: Install Dependencies
         run: |
           cd frontend && npm ci
           cd ../backend && npm ci
 
+      # Step 4: Deploy to Vercel (Preview)
       - name: Deploy to Vercel (Preview)
         id: vercel
         uses: amondnet/vercel-action@v25
@@ -46,79 +42,15 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Add PR Comment with Preview URL
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const preview = "${{ steps.vercel.outputs.preview-url }}";
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `🚀 **Staging Preview Ready!**  
-🔗 Preview URL: ${preview}`
-            });
-
-  # =============================================
-  # JOB: STAGING HEALTH CHECK
-  # =============================================
-  staging-health:
-    if: github.event_name == 'pull_request'
-    needs: staging-deploy
+  validate:
+    needs: deploy-preview
     runs-on: ubuntu-latest
-
     steps:
-      - name: Validate Staging Preview
+      # Step 5: Validate deployment using public /api/health
+      - name: Post-Deploy Health Check
         run: |
-          PREVIEW_URL="${{ needs.staging-deploy.outputs.preview_url }}"
-          echo "Checking preview: $PREVIEW_URL"
+          PREVIEW_URL=${{ needs.deploy-preview.outputs.preview_url }}
+          echo "Testing Preview URL: $PREVIEW_URL"
+          # Curl will fail the workflow if health endpoint doesn't return 2xx
           curl -f "$PREVIEW_URL/api/health" || exit 1
           echo "Staging health check passed!"
-
-  # =============================================
-  # JOB: PRODUCTION DEPLOY
-  # =============================================
-  production-deploy:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install Dependencies
-        run: |
-          cd frontend && npm ci
-          cd ../backend && npm ci
-
-      - name: Deploy to Production (Vercel)
-        id: vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prod'
-
-  # =============================================
-  # JOB: PRODUCTION HEALTH CHECK
-  # =============================================
-  production-health:
-    if: github.event_name == 'push'
-    needs: production-deploy
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Post-Deploy Production Health Check
-        run: |
-          PROD_URL="${{ steps.vercel.outputs.preview-url }}"
-          # The production URL is static, use YOUR actual prod domain
-          curl -f "https://expense-tracker-app-ten-ecru.vercel.app/api/health" || exit 1
-          echo "Production health check passed!"

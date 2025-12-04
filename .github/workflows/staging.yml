@@ -1,0 +1,44 @@
+name: Staging - Deploy & Validate
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  deploy-preview:
+    runs-on: ubuntu-latest
+    outputs:
+      preview_url: ${{ steps.vercel.outputs.preview-url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install Frontend
+        run: cd frontend && npm ci
+
+      - name: Install Backend
+        run: cd backend && npm ci
+
+      - name: Deploy to Vercel (Preview)
+        id: vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-args: '--prebuilt'  # Faster if using Vercel build cache
+
+  validate:
+    needs: deploy-preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Smoke Test on Preview
+        run: |
+          curl -f ${{ needs.deploy-preview.outputs.preview_url }} || exit 1
+          echo "Staging URL: ${{ needs.deploy-preview.outputs.preview_url }}"
+          

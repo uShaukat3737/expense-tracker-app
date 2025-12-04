@@ -7,6 +7,7 @@ on:
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
+    environment: preview  # Optional: for better visibility
     outputs:
       preview_url: ${{ steps.vercel.outputs.preview-url }}
     steps:
@@ -17,11 +18,10 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install Frontend
-        run: cd frontend && npm ci
-
-      - name: Install Backend
-        run: cd backend && npm ci
+      - name: Install Dependencies
+        run: |
+          cd frontend && npm ci
+          cd ../backend && npm ci
 
       - name: Deploy to Vercel (Preview)
         id: vercel
@@ -30,15 +30,16 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-args: '--prebuilt'  # Faster for previews
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          vercel-args: '--prebuilt'  # Faster if using Vercel build cache
 
   validate:
     needs: deploy-preview
     runs-on: ubuntu-latest
     steps:
-      - name: Run Smoke Test on Preview
+      - name: Post-Deploy Health Check
         run: |
-          curl -f ${{ needs.deploy-preview.outputs.preview_url }} || exit 1
-          echo "Staging URL: ${{ needs.deploy-preview.outputs.preview_url }}"
-          
+          PREVIEW_URL=${{ needs.deploy-preview.outputs.preview_url }}
+          echo "Testing Preview URL: $PREVIEW_URL"
+          curl -f "$PREVIEW_URL/api/health" || exit 1
+          echo "Staging health check passed!"

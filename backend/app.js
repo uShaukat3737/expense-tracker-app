@@ -64,14 +64,12 @@ app.get("/", (req, res) => {
 app.use(Sentry.Handlers.errorHandler());
 
 // Optional: Sentry test route
-/*app.get("/debug-sentry", (req, res) => {
-  try {
-    throw new Error("Sentry backend test!");
-  } catch (err) {
-    Sentry.captureException(err);
-    res.status(200).json({ message: "Sentry test captured!" });
-  }
-});*/
+// --- SENTRY DEBUG ROUTE (VERCEL SERVERLESS SAFE) ---
+app.get("/api/debug-sentry", (req, res, next) => {
+  const error = new Error("Sentry backend test error!");
+  Sentry.captureException(error);
+  next(error); // Pass to errorHandler() → 500 + Sentry capture
+});
 
 // --- START SERVER ONLY IF RUNNING LOCALLY ---
 const port = process.env.PORT || 5000;

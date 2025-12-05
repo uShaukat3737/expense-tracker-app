@@ -4,35 +4,22 @@ on:
   pull_request:
     branches: [ main ]
 
-permissions:
-  contents: write
-  pull-requests: write
-  actions: write
-  
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
-    environment: preview  # Optional: for visibility in GitHub Actions
+    environment: preview
     outputs:
       preview_url: ${{ steps.vercel.outputs.preview-url }}
-
     steps:
-      # Step 1: Checkout repo
       - uses: actions/checkout@v4
-
-      # Step 2: Setup Node.js
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-
-      # Step 3: Install dependencies
       - name: Install Dependencies
         run: |
           cd frontend && npm ci
           cd ../backend && npm ci
-
-      # Step 4: Deploy to Vercel (Preview)
       - name: Deploy to Vercel (Preview)
         id: vercel
         uses: amondnet/vercel-action@v25
@@ -46,11 +33,9 @@ jobs:
     needs: deploy-preview
     runs-on: ubuntu-latest
     steps:
-      # Step 5: Validate deployment using public /api/health
-      - name: Post-Deploy Health Check
+      - name: Exploratory Health Check
         run: |
-          PREVIEW_URL=${{ needs.deploy-preview.outputs.preview_url }}
-          echo "Testing Preview URL: $PREVIEW_URL"
-          # Curl will fail the workflow if health endpoint doesn't return 2xx
-          curl -f "$PREVIEW_URL/api/health" || exit 1
-          echo "Staging health check passed! ^_^"
+          URL=${{ needs.deploy-preview.outputs.preview_url }}
+          echo "Testing Staging: $URL"
+          curl -f "$URL/api/health" || exit 1
+          echo "Staging validation passed!"

@@ -12,19 +12,16 @@ import transactionRoutes from "./Routers/Transactions.js";
 import userRoutes from "./Routers/userRouter.js";
 
 // --- SENTRY INIT ---
-import * as Sentry from "@sentry/node";
-import * as Tracing from "@sentry/tracing";
-
+import Sentry from "@sentry/node";
 
 const app = express();
 
-
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
-  tracesSampleRate: 1.0, // performance monitoring
+  tracesSampleRate: 1.0,
 });
 
-//  MUST BE BEFORE ALL ROUTES
+// --- SENTRY MIDDLEWARE BEFORE ROUTES ---
 app.use(Sentry.Handlers.requestHandler());
 app.use(Sentry.Handlers.tracingHandler());
 
@@ -63,12 +60,17 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-//  MUST BE AFTER ALL ROUTES
+// --- SENTRY ERROR HANDLER AFTER ALL ROUTES ---
 app.use(Sentry.Handlers.errorHandler());
 
 // Optional: Sentry test route
-app.get("/debug-sentry", () => {
-  throw new Error("Sentry backend test!");
+app.get("/debug-sentry", (req, res) => {
+  try {
+    throw new Error("Sentry backend test!");
+  } catch (err) {
+    Sentry.captureException(err);
+    res.status(200).json({ message: "Sentry test captured!" });
+  }
 });
 
 // --- START SERVER ONLY IF RUNNING LOCALLY ---

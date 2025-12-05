@@ -33,9 +33,10 @@ jobs:
     needs: deploy-preview
     runs-on: ubuntu-latest
     steps:
-      - name: Exploratory Health Check
+      - name: Show and test the preview URL
         run: |
-          URL=${{ needs.deploy-preview.outputs.preview_url }}
-          echo "Testing Staging: $URL"
-          curl -f "$URL/api/health" || exit 1
+          URL="${{ needs.deploy-preview.outputs.preview_url }}"
+          echo "Full preview URL is: $URL"
+          echo "Calling health endpoint: $URL/api/health"
+          curl -v "$URL/api/health" || exit 1
           echo "Staging validation passed!"

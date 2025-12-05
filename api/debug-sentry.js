@@ -1,3 +1,4 @@
+// api/debug-sentry.js
 import * as Sentry from "@sentry/node";
 
 Sentry.init({
@@ -8,5 +9,6 @@ Sentry.init({
 export default function handler(req, res) {
   const error = new Error("Sentry backend test!");
   Sentry.captureException(error);
+
   res.status(200).json({ message: "Sentry test captured!" });
 }

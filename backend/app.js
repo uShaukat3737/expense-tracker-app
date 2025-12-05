@@ -64,14 +64,14 @@ app.get("/", (req, res) => {
 app.use(Sentry.Handlers.errorHandler());
 
 // Optional: Sentry test route
-app.get("/debug-sentry", (req, res) => {
+/*app.get("/debug-sentry", (req, res) => {
   try {
     throw new Error("Sentry backend test!");
   } catch (err) {
     Sentry.captureException(err);
     res.status(200).json({ message: "Sentry test captured!" });
   }
-});
+});*/
 
 // --- START SERVER ONLY IF RUNNING LOCALLY ---
 const port = process.env.PORT || 5000;

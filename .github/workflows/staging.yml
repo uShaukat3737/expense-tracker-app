@@ -39,10 +39,14 @@ jobs:
     needs: deploy-preview
     runs-on: ubuntu-latest
     steps:
-      - name: Show and test the preview URL
+      - name: Exploratory Health Check
         run: |
           URL="${{ needs.deploy-preview.outputs.preview_url }}"
-          echo "Full preview URL is: $URL"
-          echo "Calling health endpoint: $URL/api/health"
-          curl -v "$URL/api/health" || exit 1
-          echo "Staging validation passed!"
+          echo "Testing Preview URL: $URL"
+          
+          # Bypass Vercel Preview Protection
+          curl -f "$URL/api/health" \
+            -H "x-vercel-protection-bypass: ${{ secrets.VERCEL_PREVIEW_BYPASS_TOKEN }}" \
+            || exit 1
+          
+          echo "Staging validation passed! ^_^"

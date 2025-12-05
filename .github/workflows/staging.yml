@@ -3,6 +3,11 @@ name: Staging - Deploy & Validate
 on:
   pull_request:
     branches: [ main ]
+    
+permissions:
+  contents: write
+  pull-requests: write   # REQUIRED FOR COMMENT
+  actions: write
 
 jobs:
   deploy-preview:

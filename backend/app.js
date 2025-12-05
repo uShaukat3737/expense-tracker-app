@@ -11,7 +11,22 @@ import morgan from "morgan";
 import transactionRoutes from "./Routers/Transactions.js";
 import userRoutes from "./Routers/userRouter.js";
 
+// --- SENTRY INIT ---
+import * as Sentry from "@sentry/node";
+import * as Tracing from "@sentry/tracing";
+
+
 const app = express();
+
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0, // performance monitoring
+});
+
+//  MUST BE BEFORE ALL ROUTES
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.tracingHandler());
 
 // Connect to MongoDB
 connectDB();
@@ -46,6 +61,14 @@ app.use("/api/auth", userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+//  MUST BE AFTER ALL ROUTES
+app.use(Sentry.Handlers.errorHandler());
+
+// Optional: Sentry test route
+app.get("/debug-sentry", () => {
+  throw new Error("Sentry backend test!");
 });
 
 // --- START SERVER ONLY IF RUNNING LOCALLY ---

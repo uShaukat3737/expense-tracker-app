@@ -31,4 +31,11 @@ jobs:
 
       - name: Post-Deploy Health Check
         run: curl -f https://expense-tracker-app-ten-ecru.vercel.app/api/health || exit 1
-        
+
+      - name: Test Sentry Error Capture
+        run: |
+          echo "Triggering test error..."
+          curl -f "https://expense-tracker-app-ten-ecru.vercel.app/api/debug-sentry" || echo "500 expected - Sentry should capture"
+          echo "Waiting 30s for Sentry to receive error..."
+          sleep 30
+          echo "Sentry test completed - check dashboard for error event"

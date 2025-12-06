@@ -2,9 +2,9 @@ name: Full Stack Tests (Backend + Cypress on Vercel)
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ main, develop,cypress-fix ]
   pull_request:
-    branches: [ main ]
+    branches: [ main,cypress-fix ]
 
 jobs:
   test:

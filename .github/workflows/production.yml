@@ -2,7 +2,7 @@ name: Production - Deploy & Monitor
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main,cypress-fix ]
 
 jobs:
   deploy-prod:

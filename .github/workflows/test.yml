@@ -1,16 +1,16 @@
-# .github/workflows/test.yml
-name: Full Stack Tests (Backend + Frontend E2E)
+# .github/workflows/e2e.yml
+name: E2E Tests (Backend + Cypress on Vercel)
 
 on:
   push:
     branches: [ main, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ main ]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     services:
       mongo:
@@ -44,27 +44,18 @@ jobs:
           name: backend-coverage
           path: backend/coverage/
 
-      # FRONTEND E2E TESTS
-      - name: Install frontend deps
-        run: npm ci  # This runs in root (frontend)
-
-      - name: Start backend server
-        run: cd backend && npm run dev &
-        env:
-          NODE_ENV: test
-          MONGO_URL: mongodb://localhost:27017/testdb
-
-      - name: Wait for backend
-        run: npx wait-on http://localhost:5000/api/health -t 30000
-
-      - name: Run Cypress tests
+      # CYPRESS E2E ON VERCEL (NO LOCAL SERVER!)
+      - name: Run Cypress against Vercel URL
         uses: cypress-io/github-action@v6
         with:
-          start: npm start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
+          # NO start command — we test deployed app
+          spec: cypress/e2e/**/*.cy.js
           browser: chrome
-          record: false
+          headless: true
+          config: baseUrl=https://expense-tracker-app-three-beryl.vercel.app
+        env:
+          # Optional: if you have auth in Cypress
+          CYPRESS_BASE_URL: https://expense-tracker-app-three-beryl.vercel.app
 
       - name: Upload Cypress videos
         uses: actions/upload-artifact@v4

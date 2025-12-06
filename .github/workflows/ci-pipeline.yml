@@ -1,0 +1,20 @@
+name: CI/CD Pipeline
+
+# This satisfies Part 1: Source Stage (Triggering Pipeline)
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # This checks out your repository code so the workflow can access it
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+      
+      - name: Verify Source
+        run: echo "Source code checked out successfully. Pipeline triggered by ${{ github.event_name }}."

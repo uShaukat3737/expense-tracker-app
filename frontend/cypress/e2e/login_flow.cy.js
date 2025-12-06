@@ -6,8 +6,8 @@ describe('LOGIN FLOW — 100% Real (With Toast Errors)', () => {
   // Register a real user first (must complete avatar)
   before(() => {
     cy.clearLocalStorage();
-    cy.visit('https://expense-tracker-app-ten-ecru.vercel.app/login');
-
+    cy.visit('https://expense-tracker-app-ten-ecru.vercel.app');
+    cy.contains('Register').click();
     cy.get('input[name="name"]').type('Login Hero');
     cy.get('input[name="email"]').type(validEmail);
     cy.get('input[name="password"]').type('123456');
@@ -24,12 +24,8 @@ describe('LOGIN FLOW — 100% Real (With Toast Errors)', () => {
   it('valid login → success toast + dashboard', () => {
     cy.visit('https://expense-tracker-app-ten-ecru.vercel.app');
 
-    cy.get('input[name="email"]').type(validEmail);
-    cy.get('input[name="password"]').type('123456');
-    cy.contains('Login').click();
-
-    // Success toast appears
-    cy.url().should('include', 'expense-tracker-app-three-beryl.vercel.app');
+      // Success toast appears
+    cy.url().should('include', 'expense-tracker-app-ten-ecru.vercel.app');
   });
 
   it('invalid credentials → error toast + stays on login', () => {

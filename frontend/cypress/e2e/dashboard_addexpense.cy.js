@@ -3,7 +3,7 @@ describe('DASHBOARD — Full Real Flow (Real User + Exact MUI Icons)', () => {
   const user = {
     email: 'umerchuri@gmail.com',
     password: '1itedc23',
-    name: 'Umer'
+    name: 'Muhammad Umer'
   };
 
   beforeEach(() => {

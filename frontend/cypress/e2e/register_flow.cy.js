@@ -72,9 +72,14 @@ describe('REGISTER → AVATAR → DASHBOARD — Full Real Flow', () => {
     cy.url().should('include', '/setAvatar');
     cy.get('img').first().click();
     cy.contains('Set as Profile Picture').click();
+    cy.request({
+      url: 'https://expense-tracker-app-ten-ecru.vercel.app/register',
+      failOnStatusCode: false     // 🚀 prevents Cypress from failing automatically
+    }).then((response) => {
+      expect(response.status).to.eq(404);          // ✔ test passes if status is 404
+      expect(response.body).to.include('NOT_FOUND'); // optional
+    });
 
-    // Now try to go back to register
-    cy.visit('https://expense-tracker-app-ten-ecru.vercel.app/register');
-    cy.contains('404: NOT_FOUND').should('be.visible');
+
   });
 });

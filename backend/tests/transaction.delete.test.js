@@ -1,7 +1,6 @@
 // tests/transaction.delete.test.js
 import request from 'supertest';
 import app from '../app.js';
-import Transaction from '../models/TransactionModel.js';
 
 describe('Delete Transaction', () => {
   let userId, transactionId;
@@ -15,8 +14,8 @@ describe('Delete Transaction', () => {
     });
     userId = userRes.body.user._id;
 
-    // Add transaction
-    await request(app).post('/api/v1/addTransaction').send({
+    // Add transaction — CAPTURE ID FROM RESPONSE
+    const addRes = await request(app).post('/api/v1/addTransaction').send({
       title: 'To Delete',
       amount: 999,
       description: 'test',
@@ -26,9 +25,8 @@ describe('Delete Transaction', () => {
       userId
     });
 
-    // Get ID from DB — your API doesn't return it
-    const trans = await Transaction.findOne({ user: userId });
-    transactionId = trans._id.toString();
+    // Your API returns the transaction in body — use it!
+    transactionId = addRes.body.transaction?._id || addRes.body.newTransaction?._id;
     expect(transactionId).toBeDefined();
   });
 

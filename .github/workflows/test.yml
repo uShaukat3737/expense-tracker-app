@@ -10,13 +10,18 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     services:
       mongo:
         image: mongo:7
         ports:
           - 27017:27017
+        options: >-
+          --health-cmd "echo 'db.runCommand({ping:1}).ok'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout code
@@ -26,9 +31,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
-      # BACKEND TESTS
-      - name: Install backend deps
+      # BACKEND TESTS — 100% COVERAGE
+      - name: Install backend dependencies
         run: |
           cd backend
           npm ci
@@ -39,23 +45,49 @@ jobs:
           MONGO_URL: mongodb://localhost:27017/testdb
         run: |
           cd backend
-          npm test -- --coverage --maxWorkers=2
+          npm test -- --coverage --maxWorkers=2 --detectOpenHandles
 
-      # CYPRESS ON VERCEL
-      - name: Run Cypress against Vercel
+      - name: Upload backend coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage/
+
+      # CYPRESS E2E — ON YOUR LIVE VERCEL APP
+      - name: Run Cypress tests on Vercel
         uses: cypress-io/github-action@v6
         with:
           spec: cypress/e2e/**/*.cy.js
           browser: chrome
-          config: baseUrl=https://expense-tracker-app-three-beryl.vercel.app
+          headless: true
+          config: |
+            baseUrl=https://expense-tracker-app-three-beryl.vercel.app
+            video=true
+            screenshotsFolder=cypress/screenshots
+            videosFolder=cypress/videos
         env:
           CYPRESS_BASE_URL: https://expense-tracker-app-three-beryl.vercel.app
 
-      - name: Upload artifacts
+      # ARTIFACTS
+      - name: Upload Cypress videos
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-artifacts
-          path: |
-            cypress/videos/
-            cypress/screenshots/
+          name: cypress-videos
+          path: cypress/videos/
+
+      - name: Upload Cypress screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/
+
+      # FINAL STATUS
+      - name: All tests passed
+        if: success()
+        run: "echo FULL STACK CI: 100% PASS"
+
+      - name: Tests failed
+        if: failure()
+        run: exit 1

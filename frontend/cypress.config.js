@@ -1,10 +1,11 @@
-const { defineConfig } = require("cypress");
+// cypress.config.js
+import { defineConfig } from 'cypress'
 
-module.exports = defineConfig({
+export default defineConfig({
   e2e: {
-  baseUrl: 'https://expense-tracker-app-three-beryl.vercel.app/',
-      setupNodeEvents(on, config) {
-        // implement node event listeners here
-      },
+    baseUrl: 'https://expense-tracker-app-three-beryl.vercel.app', // YOUR VERCEL URL
+    setupNodeEvents(on, config) {
+      // optional
+    },
   },
-});
+})

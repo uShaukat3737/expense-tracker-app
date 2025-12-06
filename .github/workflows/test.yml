@@ -1,5 +1,5 @@
-# .github/workflows/e2e.yml
-name: E2E Tests (Backend + Cypress on Vercel)
+# .github/workflows/test.yml
+name: Full Stack Tests (Backend + Cypress on Vercel)
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     services:
       mongo:
@@ -26,17 +26,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      # BACKEND TESTS
-      - name: Install backend deps
-        run: cd backend && npm ci
+      # BACKEND — npm ci in backend/
+      - name: Install backend dependencies
+        run: |
+          cd backend
+          npm ci
 
       - name: Run backend tests (100% coverage)
         env:
           NODE_ENV: test
           MONGO_URL: mongodb://localhost:27017/testdb
-        run: cd backend && npm test -- --coverage --maxWorkers=2
+        run: |
+          cd backend
+          npm test -- --coverage --maxWorkers=2
 
       - name: Upload backend coverage
         uses: actions/upload-artifact@v4
@@ -44,17 +47,14 @@ jobs:
           name: backend-coverage
           path: backend/coverage/
 
-      # CYPRESS E2E ON VERCEL (NO LOCAL SERVER!)
-      - name: Run Cypress against Vercel URL
+      # CYPRESS E2E — ON YOUR LIVE VERCEL APP (NO LOCAL SERVER!)
+      - name: Run Cypress tests against Vercel
         uses: cypress-io/github-action@v6
         with:
-          # NO start command — we test deployed app
           spec: cypress/e2e/**/*.cy.js
           browser: chrome
-          headless: true
           config: baseUrl=https://expense-tracker-app-three-beryl.vercel.app
         env:
-          # Optional: if you have auth in Cypress
           CYPRESS_BASE_URL: https://expense-tracker-app-three-beryl.vercel.app
 
       - name: Upload Cypress videos

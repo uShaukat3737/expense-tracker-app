@@ -1,0 +1,105 @@
+name: Full Stack Tests (Backend + Cypress on Vercel)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+
+    steps:
+      # --------------------------
+      # CHECKOUT
+      # --------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # --------------------------
+      # NODE SETUP FOR BACKEND
+      # --------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: backend/package-lock.json
+
+      # --------------------------
+      # BACKEND DEPENDENCIES
+      # --------------------------
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      # --------------------------
+      # RUN BACKEND TESTS
+      # --------------------------
+      - name: Run backend tests (Jest)
+        working-directory: backend
+        env:
+          NODE_ENV: test
+          MONGO_URL: mongodb://localhost:27017/testdb
+          CI: true
+        run: |
+          npm test -- --runInBand --coverage --detectOpenHandles
+
+      - name: Upload backend coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage/
+
+      # --------------------------
+      # CYPRESS (E2E on Vercel)
+      # --------------------------
+      - name: Run Cypress tests on Vercel
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: frontend
+          browser: chrome
+          spec: cypress/e2e/**/*.cy.js
+          install: true
+          config: |
+            baseUrl=https://expense-tracker-app-three-beryl.vercel.app
+            video=true
+        env:
+          CYPRESS_BASE_URL: https://expense-tracker-app-three-beryl.vercel.app
+          CI: true
+
+      # ARTIFACT HANDLING
+      - name: Upload Cypress videos
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cypress-videos
+          path: cypress/videos/
+
+      - name: Upload Cypress screenshots
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots/
+
+      - name: All tests passed
+        if: success()
+        run: "echo 'FULL STACK CI: 100% PASS'"
+
+      - name: Tests failed
+        if: failure()
+        run: exit 1

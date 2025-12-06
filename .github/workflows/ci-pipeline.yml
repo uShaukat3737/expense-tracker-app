@@ -6,11 +6,17 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
+# Grant permission to push to the container registry
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
+      # --- 1. SETUP & CHECKOUT ---
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
@@ -19,33 +25,66 @@ jobs:
         with:
           node-version: '18'
 
+      # --- 2. INSTALL DEPENDENCIES (PREVIOUSLY VERIFIED) ---
+      
+      # Backend Install
       - name: Cache backend dependencies
         uses: actions/cache@v4
         with:
           path: backend/node_modules
           key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-backend-
+          restore-keys: ${{ runner.os }}-backend-
 
       - name: Install backend dependencies
         run: npm ci
         working-directory: backend
 
+      # Frontend Install
       - name: Cache frontend dependencies
         uses: actions/cache@v4
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-frontend-
+          restore-keys: ${{ runner.os }}-frontend-
 
       - name: Install frontend dependencies
         run: npm ci
         working-directory: frontend
 
-      - name: Verify installations
-        run: |
-          echo "Backend node_modules contents:"
-          if [ -d backend/node_modules ]; then ls -1 backend/node_modules | head -n 10; else echo "(no backend/node_modules)"; fi
-          echo "Frontend node_modules contents:"
-          if [ -d frontend/node_modules ]; then ls -1 frontend/node_modules | head -n 10; else echo "(no frontend/node_modules)"; fi
+      # --- 3. DOCKER SETUP ---
+      
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lowercase Repo Name
+        run: echo "REPO_LOWER=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+
+      # --- 4. BUILD & PUSH ARTIFACTS (BACKEND) ---
+      
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.REPO_LOWER }}-backend:latest
+
+      # --- 5. BUILD & PUSH ARTIFACTS (FRONTEND) ---
+      
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.REPO_LOWER }}-frontend:latest

@@ -1,0 +1,13 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+# Legacy peer deps often needed for older React setups, remove flag if not needed
+RUN npm ci --legacy-peer-deps
+
+COPY . .
+
+EXPOSE 3000
+
+CMD ["npm", "start"]

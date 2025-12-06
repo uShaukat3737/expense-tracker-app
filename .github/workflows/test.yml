@@ -70,9 +70,10 @@ jobs:
       - name: Run Cypress tests on Vercel
         uses: cypress-io/github-action@v6
         with:
-          spec: cypress/e2e/**/*.cy.js
+          working-directory: frontend
           browser: chrome
-          headless: true
+          spec: cypress/e2e/**/*.cy.js
+          install: true
           config: |
             baseUrl=https://expense-tracker-app-three-beryl.vercel.app
             video=true

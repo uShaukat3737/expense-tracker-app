@@ -19,22 +19,17 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # --- 2. DEBUG: PROVE FILES EXIST ---
-      - name: DEBUG: List Files
-        run: |
-          echo "--- ROOT CONTENTS ---"
-          ls -la
-          echo "--- BACKEND CONTENTS ---"
-          ls -la backend
-          echo "--- FRONTEND CONTENTS ---"
-          ls -la frontend
+      # --- 2. DEBUG STEP (Simplified) ---
+      # This lists all files in the repo recursively to prove if Dockerfile exists
+      - name: List All Files
+        run: ls -R
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # --- 3. INSTALL DEPENDENCIES (YOUR WORKING CODE) ---
+      # --- 3. INSTALL DEPENDENCIES (YOUR CODE) ---
       - name: Cache backend dependencies
         uses: actions/cache@v4
         with:
@@ -77,8 +72,6 @@ jobs:
         run: echo "REPO_LOWER=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
       # --- 5. BUILD ARTIFACTS ---
-      
-      # Using explicit 'file' path to ensure it finds it
       - name: Build and Push Backend Image
         uses: docker/build-push-action@v5
         with:

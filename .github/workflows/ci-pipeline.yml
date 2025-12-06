@@ -11,19 +11,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Source Stage
       - name: Checkout Source Code
         uses: actions/checkout@v4
-      
-      # 2. Build Stage - Step A: Setup Environment
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '16' # Using a standard stable version
-          
-      # 2. Build Stage - Step B: Resolve Dependencies
-      - name: Install Dependencies
-        run: npm install
-        
-      - name: Build Verification
-        run: echo "Dependencies installed successfully."
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Verify installations
+        run: |
+          echo "Backend node_modules contents:"
+          if [ -d backend/node_modules ]; then ls -1 backend/node_modules | head -n 10; else echo "(no backend/node_modules)"; fi
+          echo "Frontend node_modules contents:"
+          if [ -d frontend/node_modules ]; then ls -1 frontend/node_modules | head -n 10; else echo "(no frontend/node_modules)"; fi

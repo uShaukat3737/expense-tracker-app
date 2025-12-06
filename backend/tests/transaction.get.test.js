@@ -26,10 +26,10 @@ describe('Get Transactions — Real Behavior', () => {
     expect(res.status).toBe(200);
   });
 
-  it('returns 400 when type is not "all" (your real behavior)', async () => {
+  it('returns 400 when type is not "all" — real behavior', async () => {
     const res = await request(app).post('/api/v1/getTransaction').send({
       userId, type: 'expense', frequency: '365'
     });
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(400); // YOUR REAL BACKEND DOES THIS
   });
 });

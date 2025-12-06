@@ -1,11 +1,13 @@
 // tests/transaction.delete.test.js
 import request from 'supertest';
 import app from '../app.js';
+import Transaction from '../models/TransactionModel.js';
 
 describe('Delete Transaction', () => {
   let userId, transactionId;
 
   beforeAll(async () => {
+    // Register user
     const userRes = await request(app).post('/api/auth/register').send({
       name: 'Delete User',
       email: `delete${Date.now()}@test.com`,
@@ -13,7 +15,8 @@ describe('Delete Transaction', () => {
     });
     userId = userRes.body.user._id;
 
-    const addRes = await request(app).post('/api/v1/addTransaction').send({
+    // Add transaction
+    await request(app).post('/api/v1/addTransaction').send({
       title: 'To Delete',
       amount: 999,
       description: 'test',
@@ -23,8 +26,9 @@ describe('Delete Transaction', () => {
       userId
     });
 
-    // Get ID from response instead of DB
-    transactionId = addRes.body.transaction?._id || addRes.body.newTransaction?._id;
+    // Get ID from DB — your API doesn't return it
+    const trans = await Transaction.findOne({ user: userId });
+    transactionId = trans._id.toString();
     expect(transactionId).toBeDefined();
   });
 

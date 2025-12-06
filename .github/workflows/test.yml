@@ -10,7 +10,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 20
 
     services:
       mongo:
@@ -27,8 +27,8 @@ jobs:
         with:
           node-version: '20'
 
-      # BACKEND — npm ci in backend/
-      - name: Install backend dependencies
+      # BACKEND TESTS
+      - name: Install backend deps
         run: |
           cd backend
           npm ci
@@ -41,14 +41,8 @@ jobs:
           cd backend
           npm test -- --coverage --maxWorkers=2
 
-      - name: Upload backend coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: backend-coverage
-          path: backend/coverage/
-
-      # CYPRESS E2E — ON YOUR LIVE VERCEL APP (NO LOCAL SERVER!)
-      - name: Run Cypress tests against Vercel
+      # CYPRESS ON VERCEL
+      - name: Run Cypress against Vercel
         uses: cypress-io/github-action@v6
         with:
           spec: cypress/e2e/**/*.cy.js
@@ -57,16 +51,11 @@ jobs:
         env:
           CYPRESS_BASE_URL: https://expense-tracker-app-three-beryl.vercel.app
 
-      - name: Upload Cypress videos
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: cypress-videos
-          path: cypress/videos/
-
-      - name: Upload Cypress screenshots
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots/
+          name: cypress-artifacts
+          path: |
+            cypress/videos/
+            cypress/screenshots/

@@ -6,7 +6,6 @@ on:
   pull_request:
     branches: [ "main", "master" ]
 
-# Grant permission to push to the container registry
 permissions:
   contents: read
   packages: write
@@ -16,43 +15,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # --- 1. SETUP & CHECKOUT ---
+      # --- 1. CHECKOUT ---
       - name: Checkout Source Code
         uses: actions/checkout@v4
+
+      # --- 2. DEBUG: PROVE FILES EXIST ---
+      - name: DEBUG: List Files
+        run: |
+          echo "--- ROOT CONTENTS ---"
+          ls -la
+          echo "--- BACKEND CONTENTS ---"
+          ls -la backend
+          echo "--- FRONTEND CONTENTS ---"
+          ls -la frontend
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
 
-      # --- 2. INSTALL DEPENDENCIES (PREVIOUSLY VERIFIED) ---
-      
-      # Backend Install
+      # --- 3. INSTALL DEPENDENCIES (YOUR WORKING CODE) ---
       - name: Cache backend dependencies
         uses: actions/cache@v4
         with:
           path: backend/node_modules
           key: ${{ runner.os }}-backend-${{ hashFiles('backend/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-backend-
+          restore-keys: |
+            ${{ runner.os }}-backend-
 
       - name: Install backend dependencies
         run: npm ci
         working-directory: backend
 
-      # Frontend Install
       - name: Cache frontend dependencies
         uses: actions/cache@v4
         with:
           path: frontend/node_modules
           key: ${{ runner.os }}-frontend-${{ hashFiles('frontend/package-lock.json') }}
-          restore-keys: ${{ runner.os }}-frontend-
+          restore-keys: |
+            ${{ runner.os }}-frontend-
 
       - name: Install frontend dependencies
         run: npm ci
         working-directory: frontend
 
-      # --- 3. DOCKER SETUP ---
-      
+      # --- 4. DOCKER SETUP ---
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -69,8 +76,9 @@ jobs:
       - name: Lowercase Repo Name
         run: echo "REPO_LOWER=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
 
-      # --- 4. BUILD & PUSH ARTIFACTS (BACKEND) ---
+      # --- 5. BUILD ARTIFACTS ---
       
+      # Using explicit 'file' path to ensure it finds it
       - name: Build and Push Backend Image
         uses: docker/build-push-action@v5
         with:
@@ -79,8 +87,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ env.REPO_LOWER }}-backend:latest
 
-      # --- 5. BUILD & PUSH ARTIFACTS (FRONTEND) ---
-      
       - name: Build and Push Frontend Image
         uses: docker/build-push-action@v5
         with:

@@ -8,7 +8,7 @@ describe('DASHBOARD — Full Real Flow (Real User + Exact MUI Icons)', () => {
 
   beforeEach(() => {
     cy.clearLocalStorage();
-    cy.visit('https://expense-tracker-app-three-beryl.vercel.app');
+    cy.visit('https://expense-tracker-app-ten-ecru.vercel.app');
   });
 
  it('full dashboard flow — login → add → edit → delete → filters → logout', () => {
@@ -18,8 +18,7 @@ describe('DASHBOARD — Full Real Flow (Real User + Exact MUI Icons)', () => {
     cy.contains('button', 'Login').click();
 
     cy.contains(`Welcome back, ${user.name}`).should('be.visible');
-    cy.url().should('include', 'expense-tracker-app-three-beryl.vercel.app');
-
+    cy.url().should('include', 'expense-tracker-app-ten-ecru.vercel.app');  
     // 2. ADD EXPENSE
     cy.contains('Add New').click();
 
@@ -64,7 +63,7 @@ describe('DASHBOARD — Full Real Flow (Real User + Exact MUI Icons)', () => {
 
     // 6. LOGOUT
     cy.contains('Logout').click();
-    cy.url().should('eq', 'https://expense-tracker-app-three-beryl.vercel.app/login');
+    cy.url().should('eq', 'https://expense-tracker-app-ten-ecru.vercel.app/login');
 
     
   });
@@ -74,7 +73,7 @@ it('full dashboard flow — login → add 5 transactions → edit → delete →
     cy.get('input[name="password"]').type(user.password);
     cy.contains('button', 'Login').click();
     cy.contains(`Welcome back, ${user.name}`).should('be.visible');
-    cy.url().should('include', 'expense-tracker-app-three-beryl.vercel.app');
+    cy.url().should('include', 'expense-tracker-app-ten-ecru.vercel.app');
 
     // 2. ADD 5 TRANSACTIONS — HARD-CODED (NO FUNCTION)
     // Transaction 1
@@ -180,7 +179,7 @@ it('full dashboard flow — login → add 5 transactions → edit → delete →
     cy.get('input[name="password"]').type(user.password);
     cy.contains('button', 'Login').click();
     cy.contains(`Welcome back, ${user.name}`).should('be.visible');
-    cy.url().should('include', 'expense-tracker-app-three-beryl.vercel.app');
+    cy.url().should('include', 'expense-tracker-app-ten-ecru.vercel.app');
     cy.contains('Add New').click();
 
     // Fill only title

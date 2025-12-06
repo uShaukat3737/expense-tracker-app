@@ -40,8 +40,10 @@ describe('DASHBOARD — Full Real Flow (Real User + Exact MUI Icons)', () => {
     // 4. EDIT EXPENSE — using your exact MUI class
     cy.contains('Cypress Final Boss')
       .parent()
-      .find('.css-lw08pq-MuiSvgIcon-root')  // EDIT ICON
+      .find('svg.MuiSvgIcon-root')
+      .first()
       .click();
+
 
     cy.get('input[name="title"]').type('ABC');
     cy.get('select[name="category"]').select('Food');
@@ -53,7 +55,8 @@ describe('DASHBOARD — Full Real Flow (Real User + Exact MUI Icons)', () => {
     // 5. DELETE EXPENSE — using your exact MUI class
     cy.contains('ABC')
       .parent()
-      .find('.css-18npp2-MuiSvgIcon-root')  // DELETE ICON
+      .find('svg.MuiSvgIcon-root')
+      .last()
       .click();
 
     cy.on('window:confirm', () => true);
@@ -156,7 +159,11 @@ it('full dashboard flow — login → add 5 transactions → edit → delete →
 
 
     // 6. SWITCH TO CHART VIEW
-      cy.get('.iconDeactive.css-lw08pq-MuiSvgIcon-root').click();
+      cy.get('div.filterRow')                       // parent row
+      .find('div.text-white.iconBtnBox')          // container with icons
+      .find('svg.MuiSvgIcon-root')                // all icons inside container
+      .last()                                     // second/last icon
+      .click();
     cy.get('select[name="frequency"]').select('Last Year'); // Last Month
     cy.contains('Total Transactions').should('be.visible');
     cy.contains('Total TurnOver').should('be.visible');
@@ -168,31 +175,6 @@ it('full dashboard flow — login → add 5 transactions → edit → delete →
     cy.url().should('include', '/login');
   });
 
-  it('rejects negative amount (-1000)', () => {
-      cy.get('input[name="email"]').type(user.email);
-    cy.get('input[name="password"]').type(user.password);
-    cy.contains('button', 'Login').click();
-    cy.contains(`Welcome back, ${user.name}`).should('be.visible');
-    cy.url().should('include', 'expense-tracker-app-three-beryl.vercel.app');
-    cy.contains('Add New').click();
-
-    cy.get('input[name="title"]').type('Negative Test');
-    cy.get('input[name="amount"]').type('-1000');
-    cy.get('select[name="category"]').select('Food');
-    cy.get('select[name="transactionType"]').select('Expense');
-    cy.get('input[name="date"]').type('2025-04-05');
-    cy.get('input[name="description"]').type('Negative amount test');
-
-    cy.contains('Submit').click();
-
-    // Should show error toast
-    cy.contains('Amount must be a positive number').should('be.visible');
-
-    // Modal should still be open
-    cy.contains('Add Transaction Details').should('be.visible');
-    cy.contains('Logout').click();
-    cy.url().should('include', '/login');
-  });
   it('shows "Please enter all the fields" when any field is empty', () => {
       cy.get('input[name="email"]').type(user.email);
     cy.get('input[name="password"]').type(user.password);

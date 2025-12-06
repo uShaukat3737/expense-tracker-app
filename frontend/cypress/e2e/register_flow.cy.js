@@ -5,7 +5,7 @@ describe('REGISTER → AVATAR → DASHBOARD — Full Real Flow', () => {
 
   it('completes full registration with avatar selection', () => {
     // 1. Go to register page
-    cy.visit('http://localhost:3000/register');
+    cy.visit('https://expense-tracker-app-three-beryl.vercel.app/register');
 
     // 2. Fill and submit
     cy.get('input[name="name"]').type('Final User');
@@ -29,7 +29,7 @@ describe('REGISTER → AVATAR → DASHBOARD — Full Real Flow', () => {
     cy.contains('Set as Profile Picture').click();
 
     // 7. Should go to dashboard
-    cy.url().should('include', 'http://localhost:3000/');
+    cy.url().should('include', 'https://expense-tracker-app-three-beryl.vercel.app/');
     cy.contains('Expense Management System').should('be.visible');
     cy.contains('Select Frequency').should('be.visible');
 

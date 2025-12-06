@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1765020098694" clover="3.2.0">
-  <project timestamp="1765020098695" name="All files">
-    <metrics statements="166" coveredstatements="136" conditionals="59" coveredconditionals="41" methods="16" coveredmethods="11" elements="241" coveredelements="188" complexity="0" loc="166" ncloc="166" packages="6" files="9" classes="9"/>
+<coverage generated="1765026868374" clover="3.2.0">
+  <project timestamp="1765026868374" name="All files">
+    <metrics statements="166" coveredstatements="129" conditionals="59" coveredconditionals="39" methods="16" coveredmethods="10" elements="241" coveredelements="178" complexity="0" loc="166" ncloc="166" packages="6" files="9" classes="9"/>
     <package name="backend">
       <metrics statements="29" coveredstatements="23" conditionals="4" coveredconditionals="2" methods="4" coveredmethods="1"/>
       <file name="app.js" path="C:\Users\nicheducan\Desktop\SQE\expense-tracker-app-main\backend\app.js">
@@ -71,29 +71,29 @@
       </file>
     </package>
     <package name="backend.controllers">
-      <metrics statements="107" coveredstatements="86" conditionals="53" coveredconditionals="38" methods="9" coveredmethods="8"/>
+      <metrics statements="107" coveredstatements="79" conditionals="53" coveredconditionals="36" methods="9" coveredmethods="7"/>
       <file name="transactionController.js" path="C:\Users\nicheducan\Desktop\SQE\expense-tracker-app-main\backend\controllers\transactionController.js">
-        <metrics statements="69" coveredstatements="55" conditionals="38" coveredconditionals="24" methods="5" coveredmethods="5"/>
+        <metrics statements="69" coveredstatements="48" conditionals="38" coveredconditionals="22" methods="5" coveredmethods="4"/>
         <line num="5" count="10" type="stmt"/>
-        <line num="6" count="8" type="stmt"/>
-        <line num="15" count="8" type="stmt"/>
-        <line num="19" count="8" type="cond" truecount="2" falsecount="0"/>
-        <line num="27" count="2" type="stmt"/>
-        <line num="33" count="6" type="stmt"/>
-        <line num="35" count="6" type="cond" truecount="1" falsecount="1"/>
+        <line num="6" count="6" type="stmt"/>
+        <line num="15" count="6" type="stmt"/>
+        <line num="19" count="6" type="cond" truecount="2" falsecount="0"/>
+        <line num="27" count="3" type="stmt"/>
+        <line num="33" count="3" type="stmt"/>
+        <line num="35" count="3" type="cond" truecount="1" falsecount="1"/>
         <line num="36" count="0" type="stmt"/>
-        <line num="42" count="6" type="stmt"/>
-        <line num="52" count="6" type="stmt"/>
-        <line num="54" count="6" type="stmt"/>
-        <line num="56" count="6" type="stmt"/>
+        <line num="42" count="3" type="stmt"/>
+        <line num="52" count="3" type="stmt"/>
+        <line num="54" count="3" type="stmt"/>
+        <line num="56" count="3" type="stmt"/>
         <line num="61" count="0" type="stmt"/>
         <line num="68" count="10" type="stmt"/>
-        <line num="69" count="3" type="stmt"/>
-        <line num="70" count="3" type="stmt"/>
-        <line num="72" count="3" type="stmt"/>
-        <line num="74" count="3" type="stmt"/>
-        <line num="76" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="77" count="2" type="stmt"/>
+        <line num="69" count="2" type="stmt"/>
+        <line num="70" count="2" type="stmt"/>
+        <line num="72" count="2" type="stmt"/>
+        <line num="74" count="2" type="stmt"/>
+        <line num="76" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="77" count="1" type="stmt"/>
         <line num="84" count="1" type="stmt"/>
         <line num="88" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="89" count="0" type="stmt"/>
@@ -105,20 +105,20 @@
         <line num="110" count="1" type="stmt"/>
         <line num="115" count="0" type="stmt"/>
         <line num="123" count="10" type="stmt"/>
-        <line num="124" count="2" type="stmt"/>
-        <line num="125" count="2" type="stmt"/>
-        <line num="126" count="2" type="stmt"/>
-        <line num="130" count="2" type="stmt"/>
-        <line num="132" count="2" type="cond" truecount="2" falsecount="0"/>
+        <line num="124" count="1" type="stmt"/>
+        <line num="125" count="1" type="stmt"/>
+        <line num="126" count="1" type="stmt"/>
+        <line num="130" count="1" type="stmt"/>
+        <line num="132" count="1" type="cond" truecount="1" falsecount="1"/>
         <line num="133" count="1" type="stmt"/>
-        <line num="138" count="1" type="stmt"/>
-        <line num="142" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="138" count="0" type="stmt"/>
+        <line num="142" count="0" type="cond" truecount="0" falsecount="2"/>
         <line num="143" count="0" type="stmt"/>
-        <line num="149" count="1" type="stmt"/>
-        <line num="150" count="1" type="stmt"/>
-        <line num="153" count="1" type="stmt"/>
-        <line num="155" count="1" type="stmt"/>
-        <line num="159" count="1" type="stmt"/>
+        <line num="149" count="0" type="stmt"/>
+        <line num="150" count="0" type="stmt"/>
+        <line num="153" count="0" type="stmt"/>
+        <line num="155" count="0" type="stmt"/>
+        <line num="159" count="0" type="stmt"/>
         <line num="164" count="0" type="stmt"/>
         <line num="171" count="10" type="stmt"/>
         <line num="172" count="2" type="stmt"/>
@@ -203,13 +203,13 @@
       <metrics statements="8" coveredstatements="7" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="1"/>
       <file name="authHelper.js" path="C:\Users\nicheducan\Desktop\SQE\expense-tracker-app-main\backend\tests\utils\authHelper.js">
         <metrics statements="8" coveredstatements="7" conditionals="2" coveredconditionals="1" methods="2" coveredmethods="1"/>
-        <line num="5" count="4" type="stmt"/>
-        <line num="7" count="4" type="stmt"/>
-        <line num="8" count="4" type="cond" truecount="1" falsecount="1"/>
-        <line num="10" count="4" type="stmt"/>
-        <line num="18" count="4" type="stmt"/>
-        <line num="19" count="4" type="stmt"/>
-        <line num="22" count="4" type="stmt"/>
+        <line num="5" count="2" type="stmt"/>
+        <line num="7" count="2" type="stmt"/>
+        <line num="8" count="2" type="cond" truecount="1" falsecount="1"/>
+        <line num="10" count="2" type="stmt"/>
+        <line num="18" count="2" type="stmt"/>
+        <line num="19" count="2" type="stmt"/>
+        <line num="22" count="2" type="stmt"/>
         <line num="23" count="0" type="stmt"/>
       </file>
     </package>

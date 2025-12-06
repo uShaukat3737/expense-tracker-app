@@ -34,11 +34,16 @@ export const registerControllers = async (req, res, next) => {
             email, 
             password: hashedPassword, 
         });
-
         return res.status(200).json({
-            success: true,
-            message: "User Created Successfully",
-            user: newUser
+        success: true,
+        message: "User Created Successfully",
+        user: {
+            _id: newUser._id,
+            name: newUser.name,
+            email: newUser.email,
+            isAvatarImageSet: newUser.isAvatarImageSet,
+            avatarImage: newUser.avatarImage,
+        }
         });
     }
     catch(err){
@@ -50,53 +55,54 @@ export const registerControllers = async (req, res, next) => {
 
 }
 export const loginControllers = async (req, res, next) => {
-    try{
-        const { email, password } = req.body;
+  try {
+    const { email, password } = req.body;
 
-        // console.log(email, password);
-  
-        if (!email || !password){
-            return res.status(400).json({
-                success: false,
-                message: "Please enter All Fields",
-            }); 
-        }
-    
-        const user = await User.findOne({ email });
-    
-        if (!user){
-            return res.status(401).json({
-                success: false,
-                message: "User not found",
-            }); 
-        }
-    
-        const isMatch = await bcrypt.compare(password, user.password);
-    
-        if (!isMatch){
-            return res.status(401).json({
-                success: false,
-                message: "Incorrect Email or Password",
-            }); 
-        }
-
-        delete user.password;
-
-        return res.status(200).json({
-            success: true,
-            message: `Welcome back, ${user.name}`,
-            user,
-        });
-
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Please enter All Fields",
+      });
     }
-    catch(err){
-        return res.status(500).json({
-            success: false,
-            message: err.message,
-        });
-    }
-}
 
+    // THIS IS THE KEY LINE — forces password to be selected
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect Email or Password",
+      });
+    }
+
+    // Clean response — no password leaked
+    return res.status(200).json({
+      success: true,
+      message: `Welcome back, ${user.name}`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAvatarImageSet: user.isAvatarImageSet,
+        avatarImage: user.avatarImage,
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
 export const setAvatarController = async (req, res, next)=> {
     try{
 

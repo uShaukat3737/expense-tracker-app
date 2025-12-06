@@ -72,12 +72,14 @@ app.get("/api/debug-sentry", (req, res, next) => {
 });
 
 // --- START SERVER ONLY IF RUNNING LOCALLY ---
+// app.js – replace from line ~75 to end
 const port = process.env.PORT || 5000;
 
-if (process.env.VERCEL === undefined) {
+// ONLY start server when NOT in test mode
+if (process.env.NODE_ENV !== "test") {
   app.listen(port, () => {
     console.log(`Server is listening on http://localhost:${port}`);
   });
 }
 
-export default app;
+export default app;  // ← THIS IS CRITICAL FOR SUPERTEST

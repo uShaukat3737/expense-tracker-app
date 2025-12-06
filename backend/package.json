@@ -1,0 +1,48 @@
+{
+"name": "backend",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "test": "node --expose-gc --max-old-space-size=384 --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:auth": "npm test -- auth",
+    "test:trans": "npm test transaction",
+    "test:watch": "npm test -- --watch"
+  },
+  "jest": {
+    "preset": "@shelf/jest-mongodb",
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.js"],
+    "testMatch": ["<rootDir>/tests/**/*.test.js"],
+    "maxWorkers": 1,
+    "workerIdleMemoryLimit": "256MB",
+    "testTimeout": 15000,
+    "clearMocks": true
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@sentry/node": "^7.44.0",
+    "@sentry/tracing": "^7.120.4",
+    "axios": "^1.3.5",
+    "bcrypt": "^5.1.0",
+    "concurrently": "^8.0.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "helmet": "^6.1.5",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
+    "mongoose": "^7.0.3",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.22",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "@shelf/jest-mongodb": "^6.0.2",
+    "jest": "^30.2.0",
+    "supertest": "^7.1.4"
+  }
+}

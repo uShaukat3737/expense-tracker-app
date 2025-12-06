@@ -43,7 +43,7 @@ describe('REGISTER → AVATAR → DASHBOARD — Full Real Flow', () => {
   });
 
   it('blocks duplicate email — stays on register page silently', () => {
-    cy.visit('http://localhost:3000/register');
+    cy.visit('https://expense-tracker-app-three-beryl.vercel.app/register');
 
     cy.get('input[name="name"]').type('Duplicate User');
     cy.get('input[name="email"]').type(email); // same email
@@ -60,7 +60,7 @@ describe('REGISTER → AVATAR → DASHBOARD — Full Real Flow', () => {
 
   it('blocks direct access to /register when logged in (Fails)', () => {
     // First complete registration
-    cy.visit('http://localhost:3000/register');
+    cy.visit('https://expense-tracker-app-three-beryl.vercel.app/register');
     cy.get('input[name="name"]').type('Protected User');
     cy.get('input[name="email"]').type(`protected${timestamp}@test.com`);
     cy.get('input[name="password"]').type('123456');
@@ -71,8 +71,8 @@ describe('REGISTER → AVATAR → DASHBOARD — Full Real Flow', () => {
     cy.contains('Set as Profile Picture').click();
 
     // Now try to go back to register
-    cy.visit('http://localhost:3000/register');
+    cy.visit('https://expense-tracker-app-three-beryl.vercel.app/register');
     cy.url().should('not.include', '/register');
-    cy.url().should('include', 'http://localhost:3000/');
+    cy.url().should('include', 'https://expense-tracker-app-three-beryl.vercel.app/');
   });
 });

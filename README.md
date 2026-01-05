@@ -177,8 +177,12 @@ Insert gif or link to demo
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
-# Staging test
-# Staging test
-# Staging test
-// staging trigger
-// staging trigger
+
+## ⚖️ Credits & Attribution
+This project is a technical fork (manually cloned) of the original [Expense Tracker App](https://github.com/Priyanshu9898/Expense-Tracker-App) by [Priyanshu9898]. 
+
+**My Contributions:**
+While the core application logic belongs to the original creator, this repository serves as a demonstration of **Software Quality Engineering (SQE)**. I have implemented:
+* **CI/CD Pipeline:** Fully automated workflows via GitHub Actions and Jenkins.
+* **Testing Suite:** Comprehensive Unit and E2E testing using Jest and Cypress.
+* **DevOps:** Cloud deployment orchestration on Vercel and Sentry integration.
